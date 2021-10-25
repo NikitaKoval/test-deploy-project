@@ -17,6 +17,8 @@ VERSION=`cat VERSION`
 echo "Build images"
 VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml build
 echo "Pushing images"
-VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml build
-
-git push
+VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml push
+git config user.name "Jenkins"
+git config user.email jenkins@localhost
+git push origin refs/remotes/origin/master
+git push origin --tags
