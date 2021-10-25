@@ -6,7 +6,7 @@ bump2version --allow-dirty patch
 VERSION=`cat VERSION`
 
 echo "Build test images"
-docker-compose -f docker-compose.base.yml -f docker-compose.ci.yml build
+VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.ci.yml build
 
 echo "Run backend tests"
 VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.ci.yml run --rm backend pytest --junitxml=.test-results/be-report.xml
