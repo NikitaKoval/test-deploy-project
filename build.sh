@@ -18,3 +18,5 @@ echo "Build images"
 VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml build
 echo "Pushing images"
 VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml build
+
+git push
