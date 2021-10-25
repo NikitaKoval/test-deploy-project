@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders post list unchanged 1`] = `
+<ul>
+  <li>
+    zzz
+    <span>
+       
+      <small>
+        10/18/2021, 7:46:17 AM
+      </small>
+    </span>
+  </li>
+  <li>
+    bbb
+    <span>
+       
+      <small>
+        10/18/2021, 7:45:35 AM
+      </small>
+    </span>
+  </li>
+  <li>
+    aaa
+    <span>
+       
+      <small>
+        10/18/2021, 7:30:13 AM
+      </small>
+    </span>
+  </li>
+</ul>
+`;

@@ -1,0 +1,92 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    image: registry.digitalocean.com/demoprojectreg/backend:${VERSION}
+    environment:
+      - HOST=${HOST}
+    env_file:
+      - .env.prod
+    networks:
+      - default
+    depends_on:
+      - postgres
+    ports:
+      - 8000:8000
+    volumes:
+      - django_static:/bstatic
+      - django_media:/bmedia
+    labels:
+      - "traefik.http.routers.backend.rule=Host(`${HOST}`) && PathPrefix(`/api`) || PathPrefix(`/admin`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.tls.certresolver=leresolver"
+
+  frontend:
+    build:
+      context: ./frontend
+    image: registry.digitalocean.com/demoprojectreg/frontend:${VERSION}
+    environment:
+      - HOST=${HOST}
+    ports:
+      - 3000:3000
+    labels:
+      - "traefik.http.routers.frontend.rule=Host(`${HOST}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certresolver=leresolver"
+
+  postgres:
+    env_file:
+      - .env.prod
+    networks:
+      - default
+    labels:
+      - "traefik.enable=false"
+
+  httpd:
+    image: httpd:2.4.43
+    restart: unless-stopped
+    volumes:
+      - django_static:/usr/local/apache2/htdocs/bstatic
+      - django_media:/usr/local/apache2/htdocs/bmedia
+    depends_on:
+      - backend
+    labels:
+      - "traefik.http.routers.static.rule=Host(`${HOST}`) && PathPrefix(`/bstatic`) || PathPrefix(`/bmedia`)"
+      - "traefik.http.routers.static.entrypoints=websecure"
+      - "traefik.http.routers.static.tls=true"
+      - "traefik.http.routers.static.tls.certresolver=leresolver"
+
+  traefik:
+    image: traefik:v2.2.1
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - default
+    depends_on:
+      - backend
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker
+      - --entrypoints.websecure.http.tls.certResolver=leresolver
+      - --certificatesresolvers.leresolver.acme.email=me@nikitakoval.com
+      - --certificatesresolvers.leresolver.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.leresolver.acme.tlschallenge=true
+      - --certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=web
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+    volumes:
+      - ./letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=false"
+
+volumes:
+  django_static:
+  django_media:

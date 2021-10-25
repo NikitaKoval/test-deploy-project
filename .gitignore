@@ -1,0 +1,6 @@
+venv/
+.env.prod
+.test-results/
+.pytest-cache/
+*.sqlite3
+.idea/
