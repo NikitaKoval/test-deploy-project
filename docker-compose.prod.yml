@@ -2,8 +2,6 @@ version: "3.8"
 
 services:
   backend:
-    build:
-      context: ./backend
     image: registry.digitalocean.com/demoprojectreg/backend:${VERSION}
     environment:
       - HOST=${HOST}
@@ -13,8 +11,6 @@ services:
       - default
     depends_on:
       - postgres
-    ports:
-      - 8000:8000
     volumes:
       - django_static:/bstatic
       - django_media:/bmedia
@@ -25,13 +21,9 @@ services:
       - "traefik.http.routers.backend.tls.certresolver=leresolver"
 
   frontend:
-    build:
-      context: ./frontend
     image: registry.digitalocean.com/demoprojectreg/frontend:${VERSION}
     environment:
       - HOST=${HOST}
-    ports:
-      - 3000:3000
     labels:
       - "traefik.http.routers.frontend.rule=Host(`${HOST}`) && PathPrefix(`/`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
@@ -82,7 +74,7 @@ services:
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
     volumes:
-      - ./letsencrypt:/letsencrypt
+      - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - "traefik.enable=false"
@@ -90,3 +82,4 @@ services:
 volumes:
   django_static:
   django_media:
+  letsencrypt:
