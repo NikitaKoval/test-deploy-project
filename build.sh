@@ -14,4 +14,4 @@ echo "Run frontend tests"
 VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.ci.yml run --rm frontend-test npm run test:ci
 
 echo "Pushing images"
-VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml push backend frontend
+VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.ci.yml push backend frontend
