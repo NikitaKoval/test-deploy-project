@@ -4,6 +4,10 @@ import {useEffect, useState} from "react";
 import {getPosts, sendPost} from "../api";
 import PostsList from "../components/posts-list";
 
+export async function getServerSideProps() {
+  return { props: {} }
+}
+
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [currentPost, setCurrentPost] = useState('');
