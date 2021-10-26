@@ -19,8 +19,8 @@ scp docker-compose.base.yml docker-compose.prod.yml .env.prod ${SSH_USER}@${DEPL
 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SSH_USER}@${DEPLOY_HOST} /bin/bash <<EOF
 set -xe
 start_containers() {
-VERSION=${VERSION} HOST={DEPLOY_HOST} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
-VERSION=${VERSION} HOST={DEPLOY_HOST} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml exec -T backend python manage.py migrate
+VERSION=${VERSION} HOST=${DEPLOY_HOST} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
+VERSION=${VERSION} HOST=${DEPLOY_HOST} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml exec -T backend python manage.py migrate
 rm -f .env.prod docker-compose.*
 }
 start_containers
