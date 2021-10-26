@@ -21,4 +21,4 @@ class PostApiTest(APITestCase):
         self.client.put(url, {'text': 'updated_text'})
 
         post.refresh_from_db()
-        self.assertEqual(post.text, 'updasted_text')
+        self.assertEqual(post.text, 'updated_text')
