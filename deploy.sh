@@ -10,7 +10,7 @@ VERSION=$5
 ln -sf ${ENV_PATH} .env.prod
 eval `ssh-agent -s`
 ssh-add -k ${SSH_KEY_PATH}
-ssh-keyscan -H DEPLOY_HOST >> ~/.ssh/known_hosts
+ssh-keyscan -H ${DEPLOY_HOST} >> ~/.ssh/known_hosts
 export DOCKER_HOST='ssh://${SSH_USER}@${DEPLOY_HOST}'
 VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml pull -q
 
