@@ -1,18 +1,27 @@
 #!/usr/bin/env bash
 set -xe
 
-ln -sf ${PROD_ENV} .env.prod
+DEPLOY_HOST=$1
+SSH_USER=$2
+ENV_PATH=$3
+SSH_KEY_PATH=$4
+VERSION=$5
+
+ln -sf ${ENV_PATH} .env.prod
 eval `ssh-agent -s`
-ssh-add -k ${PROD_SSH}
-ssh-keyscan -H demo.nikitakoval.com >> ~/.ssh/known_hosts
-export DOCKER_HOST='ssh://deploy@demo.nikitakoval.com'
+ssh-add -k ${SSH_KEY_PATH}
+ssh-keyscan -H DEPLOY_HOST >> ~/.ssh/known_hosts
+export DOCKER_HOST='ssh://${SSH_USER}@${DEPLOY_HOST}'
 VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml pull -q
 
-scp docker-compose.base.yml docker-compose.prod.yml .env.prod deploy@demo.nikitakoval.com:~
+scp docker-compose.base.yml docker-compose.prod.yml .env.prod ${SSH_USER}@${DEPLOY_HOST}:~
 
-ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null deploy@demo.nikitakoval.com /bin/bash <<EOF
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SSH_USER}@${DEPLOY_HOST} /bin/bash <<EOF
 set -xe
-VERSION=${VERSION} HOST=demo.nikitakoval.com docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
-VERSION=${VERSION} HOST=demo.nikitakoval.com docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml exec -T backend python manage.py migrate
+start_containers() {
+VERSION=${VERSION} HOST={DEPLOY_HOST} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
+VERSION=${VERSION} HOST={DEPLOY_HOST} docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml exec -T backend python manage.py migrate
 rm -f .env.prod docker-compose.*
+}
+start_containers
 EOF
