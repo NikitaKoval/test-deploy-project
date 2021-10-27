@@ -14,7 +14,7 @@ echo "Run frontend tests"
 VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.ci.yml run --rm frontend-test npm run test:ci
 
 echo "Run acceptance tests"
-VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.ci.yml run --rm backend sh -e 'python manage.py flush --no-input && python manage.py migrate'
+VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.ci.yml run --rm backend sh -c 'python manage.py flush --no-input && python manage.py migrate'
 VERSION=${VERSION} docker-compose -f docker-compose.base.yml -f docker-compose.ci.yml run --rm cypress
 
 echo "Pushing images"
