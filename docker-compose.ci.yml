@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: ./backend
-#    image: registry.digitalocean.com/demoprojectreg/backend:${VERSION}
+    image: registry.digitalocean.com/demoprojectreg/backend:${VERSION}
     env_file:
       - .env.dev
     networks:
@@ -25,7 +25,7 @@ services:
       - .test-results:/app/.test-results
 
   frontend:
-#    image: registry.digitalocean.com/demoprojectreg/frontend:${VERSION}
+    image: registry.digitalocean.com/demoprojectreg/frontend:${VERSION}
     environment:
       - HOST=backend:3000
     build:
