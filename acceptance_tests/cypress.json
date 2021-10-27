@@ -1,3 +1,8 @@
 {
-  "baseUrl": "http://localtest"
+  "baseUrl": "http://localtest",
+  "reporter": "junit",
+  "reporterOptions": {
+    "mochaFile": "/.test-results/acc-report.xml",
+    "toConsole": true
+  }
 }

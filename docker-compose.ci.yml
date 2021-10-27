@@ -49,6 +49,7 @@ services:
     image: cypress/included:8.7.0
     volumes:
       - ./acceptance_tests:/acceptance_tests
+      - ./.test-results:/.test-results
     working_dir: /acceptance_tests
     networks:
       - default

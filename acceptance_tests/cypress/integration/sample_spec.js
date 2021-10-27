@@ -1,5 +1,5 @@
-describe('My First Test', () => {
-    it('Does not do much!', () => {
+describe('Message board test', () => {
+    it('Message can be posted', () => {
         cy.wait(1000)
         cy.visit('/').debug()
         cy.get('[name=message-input]').type('test message{enter}')
