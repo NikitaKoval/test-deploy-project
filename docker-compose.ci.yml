@@ -4,9 +4,7 @@ services:
   backend:
     build:
       context: ./backend
-    image: registry.digitalocean.com/demoprojectreg/backend:${VERSION}
-    command: python manage.py runserver 0.0.0.0:8000
-
+#    image: registry.digitalocean.com/demoprojectreg/backend:${VERSION}
     env_file:
       - .env.dev
     networks:
@@ -15,6 +13,9 @@ services:
       - .test-results:/app/.test-results
     depends_on:
       - postgres
+    labels:
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`) || PathPrefix(`/admin`)"
+      - "traefik.http.routers.backend.entrypoints=web"
 
   frontend-test:
     build:
@@ -24,13 +25,49 @@ services:
       - .test-results:/app/.test-results
 
   frontend:
-    image: registry.digitalocean.com/demoprojectreg/frontend:${VERSION}
+#    image: registry.digitalocean.com/demoprojectreg/frontend:${VERSION}
+    environment:
+      - HOST=backend:3000
     build:
       context: ./frontend
       dockerfile: ./Dockerfile
+    networks:
+      - default
+    depends_on:
+      - backend
+    labels:
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
 
   postgres:
     env_file:
       - .env.dev
     networks:
       - default
+
+  cypress:
+    image: cypress/included:8.7.0
+    volumes:
+      - ./acceptance_tests:/acceptance_tests
+    working_dir: /acceptance_tests
+    networks:
+      - default
+    depends_on:
+      - localtest
+
+  localtest:
+    image: traefik:v2.2.1
+    ports:
+      - "80:80"
+    networks:
+      - default
+    depends_on:
+      - backend
+      - frontend
+    command:
+      - --entrypoints.web.address=:80
+      - --providers.docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=false"

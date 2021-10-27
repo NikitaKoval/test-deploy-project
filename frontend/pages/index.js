@@ -43,7 +43,7 @@ export default function Home() {
 
         <div className={styles.description}>
           <form onSubmit={handleSubmit}>
-            <input type="text" placeholder="Input your text and press enter" value={currentPost} onChange={handlePostChange}/>
+            <input type="text" name="message-input" placeholder="Input your text and press enter" value={currentPost} onChange={handlePostChange}/>
           </form>
         </div>
 

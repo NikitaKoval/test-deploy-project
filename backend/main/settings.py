@@ -18,7 +18,7 @@ HOST = env.str('HOST', None)
 if HOST:
     ALLOWED_HOSTS = [HOST]
 else:
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['localhost', 'localtest']
 
 
 # Application definition
